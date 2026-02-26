@@ -3,7 +3,6 @@ export const runtime = "nodejs";
 import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
 
-// GET /api/members
 export async function GET() {
   try {
     const members = await prisma.member.findMany({
@@ -11,7 +10,6 @@ export async function GET() {
         id: true,
         name: true,
         email: true,
-        password_hash: false,
         role: true,
         created_at: true,
       },
@@ -26,8 +24,6 @@ export async function GET() {
     );
   }
 }
-
-// POST /api/members
 export async function POST(req: Request) {
   try {
     const body = await req.json();
