@@ -5,7 +5,7 @@ import { NextResponse } from "next/server";
 
 export async function GET(
   req: Request,
-  context: { params: Promise<{ id: string }> },
+  context: { params: Promise<{ id: string }> }
 ) {
   try {
     const { id } = await context.params;
@@ -31,19 +31,20 @@ export async function GET(
     if (!item) {
       return NextResponse.json({ error: "Item not found" }, { status: 404 });
     }
+
     return NextResponse.json(item);
   } catch (error) {
     console.error("Error fetching item:", error);
     return NextResponse.json(
       { error: "Failed to fetch item" },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }
 
 export async function PATCH(
   req: Request,
-  context: { params: Promise<{ id: string }> },
+  context: { params: Promise<{ id: string }> }
 ) {
   try {
     const { id } = await context.params;
@@ -54,22 +55,36 @@ export async function PATCH(
     }
 
     const body = await req.json();
-    const {
-      name,
-      category,
-      quantity_total,
-      quantity_available,
-      location,
-      status,
-    } = body;
+    const { name, category, quantity_total, location, status } = body;
+
+    const existingItem = await prisma.item.findUnique({
+      where: { id: itemId },
+      select: {
+        quantity_available: true,
+      },
+    });
+
+    if (!existingItem) {
+      return NextResponse.json({ error: "Item not found" }, { status: 404 });
+    }
+
+    if (quantity_total !== undefined) {
+      const newTotal = Number(quantity_total);
+
+      if (isNaN(newTotal) || newTotal < existingItem.quantity_available) {
+        return NextResponse.json(
+          { error: "Invalid quantity_total" },
+          { status: 400 }
+        );
+      }
+    }
 
     const updatedItem = await prisma.item.update({
       where: { id: itemId },
       data: {
         ...(name && { name }),
         ...(category && { category }),
-        ...(quantity_total !== undefined && { quantity_total }),
-        ...(quantity_available !== undefined && { quantity_available }),
+        ...(quantity_total !== undefined && { quantity_total: Number(quantity_total) }),
         ...(location && { location }),
         ...(status && { status }),
       },
@@ -78,9 +93,9 @@ export async function PATCH(
         name: true,
         category: true,
         quantity_total: true,
+        quantity_available: true,
         location: true,
         status: true,
-        quantity_available: true,
       },
     });
 
@@ -89,32 +104,33 @@ export async function PATCH(
     console.error("Error updating item:", error);
     return NextResponse.json(
       { error: "Failed to update item" },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }
 
 export async function DELETE(
-    req: Request,
-    context: { params: Promise<{ id: string }> }){
+  req: Request,
+  context: { params: Promise<{ id: string }> }
+) {
+  try {
+    const { id } = await context.params;
+    const itemId = Number(id);
 
-        try{
-            const { id } = await context.params;
-            const itemId = Number(id);
-
-            if (isNaN(itemId)) {
-                return NextResponse.json({ error: "Invalid item ID" }, { status: 400 });
-            }
-            
-            await prisma.item.delete({
-                where: { id: itemId },
-            });
-            return NextResponse.json({ message: "Item deleted successfully" });
-        } catch (error) {
-            console.error("Error deleting item:", error);
-            return NextResponse.json(
-                { error: "Failed to delete item" },
-                { status: 500 },
-            );
-        }
+    if (isNaN(itemId)) {
+      return NextResponse.json({ error: "Invalid item ID" }, { status: 400 });
     }
+
+    await prisma.item.delete({
+      where: { id: itemId },
+    });
+
+    return NextResponse.json({ message: "Item deleted successfully" });
+  } catch (error) {
+    console.error("Error deleting item:", error);
+    return NextResponse.json(
+      { error: "Failed to delete item" },
+      { status: 500 }
+    );
+  }
+}
