@@ -6,6 +6,12 @@ info:
 http:
   method: PATCH
   url: http://localhost:3000/api/loans/1
+  body:
+    type: json
+    data: |-
+      {
+        "status": "RETURNED"
+      }
   auth: inherit
 
 settings:
