@@ -10,8 +10,17 @@ import {
   Text,
   Button,
   Tooltip,
+  Group,
 } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
+import {
+  IconHash,
+  IconBox,
+  IconCategory,
+  IconStack2,
+  IconInfoCircle,
+  IconBolt,
+} from "@tabler/icons-react";
 
 type Item = {
   id: number;
@@ -32,7 +41,7 @@ export function InventoryTable() {
       const res = await fetch("/api/items");
       const data = await res.json();
       setItems(data);
-    } catch (error) {
+    } catch {
       notifications.show({
         color: "red",
         title: "Error",
@@ -53,9 +62,7 @@ export function InventoryTable() {
     try {
       const res = await fetch("/api/loans", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           item_id: itemId,
           member_id: 4,
@@ -99,19 +106,27 @@ export function InventoryTable() {
     );
   }
 
-  const rows = items.map((item) => {
+  const rows = items.map((item, index) => {
     const unavailable =
       item.quantity_available === 0 || item.status !== "WORKING";
 
     return (
       <Table.Tr key={item.id}>
-        <Table.Td>{item.name}</Table.Td>
-        <Table.Td>{item.category}</Table.Td>
-        <Table.Td>
+        {/* Row Number */}
+        <Table.Td fw={600}>{index + 1}</Table.Td>
+
+        <Table.Td fw={500}>{item.name}</Table.Td>
+
+        <Table.Td fw={500}>{item.category}</Table.Td>
+
+        <Table.Td fw={600}>
           {item.quantity_available}/{item.quantity_total}
         </Table.Td>
+
         <Table.Td>
           <Badge
+            variant="filled"
+            size="sm"
             color={
               item.status === "WORKING"
                 ? "green"
@@ -121,11 +136,11 @@ export function InventoryTable() {
                 ? "red"
                 : "gray"
             }
-            variant="light"
           >
             {item.status}
           </Badge>
         </Table.Td>
+
         <Table.Td>
           <Tooltip
             label={unavailable ? "Item unavailable" : ""}
@@ -133,6 +148,7 @@ export function InventoryTable() {
           >
             <Button
               size="xs"
+              color="dark"
               loading={borrowingId === item.id}
               disabled={unavailable}
               onClick={() => handleBorrow(item.id)}
@@ -147,16 +163,52 @@ export function InventoryTable() {
 
   return (
     <ScrollArea>
-      <Table highlightOnHover>
+      <Table verticalSpacing="sm" style={{ color: "#111827" }}>
         <Table.Thead>
           <Table.Tr>
-            <Table.Th>Item</Table.Th>
-            <Table.Th>Category</Table.Th>
-            <Table.Th>Available</Table.Th>
-            <Table.Th>Status</Table.Th>
-            <Table.Th>Action</Table.Th>
+            <Table.Th style={{ fontSize: 17, fontWeight: 800 }}>
+              <Group gap={6}>
+                <IconHash size={18} />
+              </Group>
+            </Table.Th>
+
+            <Table.Th style={{ fontSize: 17, fontWeight: 800 }}>
+              <Group gap={6}>
+                <IconBox size={18} />
+                Item
+              </Group>
+            </Table.Th>
+
+            <Table.Th style={{ fontSize: 17, fontWeight: 800 }}>
+              <Group gap={6}>
+                <IconCategory size={18} />
+                Category
+              </Group>
+            </Table.Th>
+
+            <Table.Th style={{ fontSize: 17, fontWeight: 800 }}>
+              <Group gap={6}>
+                <IconStack2 size={18} />
+                Available
+              </Group>
+            </Table.Th>
+
+            <Table.Th style={{ fontSize: 17, fontWeight: 800 }}>
+              <Group gap={6}>
+                <IconInfoCircle size={18} />
+                Status
+              </Group>
+            </Table.Th>
+
+            <Table.Th style={{ fontSize: 17, fontWeight: 800 }}>
+              <Group gap={6}>
+                <IconBolt size={18} />
+                Action
+              </Group>
+            </Table.Th>
           </Table.Tr>
         </Table.Thead>
+
         <Table.Tbody>{rows}</Table.Tbody>
       </Table>
     </ScrollArea>

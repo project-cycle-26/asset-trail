@@ -12,9 +12,9 @@ export function PageHeader({ title, subtitle, rightSection }: PageHeaderProps) {
   return (
     <Group justify="space-between" align="flex-start" mb="md">
       <Box>
-        <Title order={2}>{title}</Title>
+        <Title order={2} c="#111827" fw={700}>{title}</Title>
         {subtitle && (
-          <Text size="sm" c="dimmed">
+          <Text size="sm" c="gray.7">
             {subtitle}
           </Text>
         )}
