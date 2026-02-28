@@ -1,18 +1,17 @@
-"use client";
-
-import { Paper } from "@mantine/core";
+import { Card } from "@mantine/core";
 
 export function Shell({ children }: { children: React.ReactNode }) {
   return (
-    <Paper
+    <Card
       radius="lg"
       shadow="sm"
-      p="md"
+      p="lg"
       style={{
-        backgroundColor: "white",
+        backgroundColor: "#ffffff",
+        border: "1px solid #e5e7eb",
       }}
     >
       {children}
-    </Paper>
+    </Card>
   );
 }

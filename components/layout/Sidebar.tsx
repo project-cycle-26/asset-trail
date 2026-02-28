@@ -16,17 +16,6 @@ export function Sidebar() {
 
   return (
     <Stack gap="xl" pt="sm">
-      {/* Branding */}
-      <Group>
-        <ThemeIcon size={34} radius="md" variant="light" color="blue">
-          <IconPackage size={20} />
-        </ThemeIcon>
-
-        <Text c="white" fw={700} size="lg">
-          Asset Trail
-        </Text>
-      </Group>
-
       {/* Navigation */}
       <Stack gap="xs">
         {navItems.map((item) => {
