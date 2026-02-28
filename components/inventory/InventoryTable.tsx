@@ -1,28 +1,13 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import {
-  Table,
-  Loader,
-  Center,
-  Badge,
-  ScrollArea,
-  Text,
-  Button,
-  Tooltip,
-  Group,
-} from "@mantine/core";
+import { Loader, Center, Text } from "@mantine/core";
+import { useMediaQuery } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
-import {
-  IconHash,
-  IconBox,
-  IconCategory,
-  IconStack2,
-  IconInfoCircle,
-  IconBolt,
-} from "@tabler/icons-react";
+import { DesktopInventoryTable } from "./DesktopInventoryTable";
+import { MobileInventoryCards } from "./MobileInventoryCards";
 
-type Item = {
+export type Item = {
   id: number;
   name: string;
   category: string;
@@ -35,6 +20,8 @@ export function InventoryTable() {
   const [items, setItems] = useState<Item[]>([]);
   const [loading, setLoading] = useState(true);
   const [borrowingId, setBorrowingId] = useState<number | null>(null);
+
+  const isMobile = useMediaQuery("(max-width: 768px)");
 
   async function fetchItems() {
     try {
@@ -106,111 +93,17 @@ export function InventoryTable() {
     );
   }
 
-  const rows = items.map((item, index) => {
-    const unavailable =
-      item.quantity_available === 0 || item.status !== "WORKING";
-
-    return (
-      <Table.Tr key={item.id}>
-        {/* Row Number */}
-        <Table.Td fw={600}>{index + 1}</Table.Td>
-
-        <Table.Td fw={500}>{item.name}</Table.Td>
-
-        <Table.Td fw={500}>{item.category}</Table.Td>
-
-        <Table.Td fw={600}>
-          {item.quantity_available}/{item.quantity_total}
-        </Table.Td>
-
-        <Table.Td>
-          <Badge
-            variant="filled"
-            size="sm"
-            color={
-              item.status === "WORKING"
-                ? "green"
-                : item.status === "NEEDS_TESTING"
-                ? "yellow"
-                : item.status === "FAULTY"
-                ? "red"
-                : "gray"
-            }
-          >
-            {item.status}
-          </Badge>
-        </Table.Td>
-
-        <Table.Td>
-          <Tooltip
-            label={unavailable ? "Item unavailable" : ""}
-            disabled={!unavailable}
-          >
-            <Button
-              size="xs"
-              color="dark"
-              loading={borrowingId === item.id}
-              disabled={unavailable}
-              onClick={() => handleBorrow(item.id)}
-            >
-              Borrow
-            </Button>
-          </Tooltip>
-        </Table.Td>
-      </Table.Tr>
-    );
-  });
-
-  return (
-    <ScrollArea>
-      <Table verticalSpacing="sm" style={{ color: "#111827" }}>
-        <Table.Thead>
-          <Table.Tr>
-            <Table.Th style={{ fontSize: 17, fontWeight: 800 }}>
-              <Group gap={6}>
-                <IconHash size={18} />
-              </Group>
-            </Table.Th>
-
-            <Table.Th style={{ fontSize: 17, fontWeight: 800 }}>
-              <Group gap={6}>
-                <IconBox size={18} />
-                Item
-              </Group>
-            </Table.Th>
-
-            <Table.Th style={{ fontSize: 17, fontWeight: 800 }}>
-              <Group gap={6}>
-                <IconCategory size={18} />
-                Category
-              </Group>
-            </Table.Th>
-
-            <Table.Th style={{ fontSize: 17, fontWeight: 800 }}>
-              <Group gap={6}>
-                <IconStack2 size={18} />
-                Available
-              </Group>
-            </Table.Th>
-
-            <Table.Th style={{ fontSize: 17, fontWeight: 800 }}>
-              <Group gap={6}>
-                <IconInfoCircle size={18} />
-                Status
-              </Group>
-            </Table.Th>
-
-            <Table.Th style={{ fontSize: 17, fontWeight: 800 }}>
-              <Group gap={6}>
-                <IconBolt size={18} />
-                Action
-              </Group>
-            </Table.Th>
-          </Table.Tr>
-        </Table.Thead>
-
-        <Table.Tbody>{rows}</Table.Tbody>
-      </Table>
-    </ScrollArea>
+  return isMobile ? (
+    <MobileInventoryCards
+      items={items}
+      borrowingId={borrowingId}
+      onBorrow={handleBorrow}
+    />
+  ) : (
+    <DesktopInventoryTable
+      items={items}
+      borrowingId={borrowingId}
+      onBorrow={handleBorrow}
+    />
   );
 }
