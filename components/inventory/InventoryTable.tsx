@@ -1,9 +1,23 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { Loader, Center, Text } from "@mantine/core";
+import { useEffect, useState, useMemo } from "react";
+import {
+  Loader,
+  Center,
+  Text,
+  TextInput,
+  Select,
+  Switch,
+  Stack,
+  Paper,
+  Title,
+  SimpleGrid,
+  Group,
+  Button,
+} from "@mantine/core";
 import { useMediaQuery } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
+import { IconSearch, IconRefresh } from "@tabler/icons-react";
 import { DesktopInventoryTable } from "./DesktopInventoryTable";
 import { MobileInventoryCards } from "./MobileInventoryCards";
 
@@ -20,6 +34,12 @@ export function InventoryTable() {
   const [items, setItems] = useState<Item[]>([]);
   const [loading, setLoading] = useState(true);
   const [borrowingId, setBorrowingId] = useState<number | null>(null);
+
+  // 🔎 FILTER STATES
+  const [search, setSearch] = useState("");
+  const [categoryFilter, setCategoryFilter] = useState<string | null>(null);
+  const [statusFilter, setStatusFilter] = useState<string | null>(null);
+  const [lowStockOnly, setLowStockOnly] = useState(false);
 
   const isMobile = useMediaQuery("(max-width: 768px)");
 
@@ -77,6 +97,36 @@ export function InventoryTable() {
     }
   }
 
+  // 🔥 FILTER LOGIC
+  const filteredItems = useMemo(() => {
+    return items.filter((item) => {
+      const matchesSearch = item.name
+        .toLowerCase()
+        .includes(search.toLowerCase());
+
+      const matchesCategory = categoryFilter
+        ? item.category === categoryFilter
+        : true;
+
+      const matchesStatus = statusFilter ? item.status === statusFilter : true;
+
+      const matchesLowStock = lowStockOnly
+        ? item.quantity_available > 0 && item.quantity_available <= 3
+        : true;
+
+      return (
+        matchesSearch && matchesCategory && matchesStatus && matchesLowStock
+      );
+    });
+  }, [items, search, categoryFilter, statusFilter, lowStockOnly]);
+
+  const handleReset = () => {
+    setSearch("");
+    setCategoryFilter(null);
+    setStatusFilter(null);
+    setLowStockOnly(false);
+  };
+
   if (loading) {
     return (
       <Center py="xl">
@@ -93,17 +143,118 @@ export function InventoryTable() {
     );
   }
 
-  return isMobile ? (
-    <MobileInventoryCards
-      items={items}
-      borrowingId={borrowingId}
-      onBorrow={handleBorrow}
+  const categories = [...new Set(items.map((i) => i.category))];
+  const statuses = [...new Set(items.map((i) => i.status))];
+
+  return (
+    <Stack gap="xl">
+      {/* ===== FILTER PANEL ===== */}
+      <Paper
+  withBorder
+  radius="md"
+  p="md"
+  shadow="xs"
+>
+  {/* Header */}
+  <Group justify="space-between" align="center" mb="md">
+    <Title order={5} fw={800}>
+      Filters
+    </Title>
+
+    <Button
+      variant="filled"
+      size="sm"
+      fw={600}
+      leftSection={<IconRefresh size={16} />}
+      onClick={handleReset}
+    >
+      Reset
+    </Button>
+  </Group>
+
+  {/* Filters Grid */}
+  <SimpleGrid
+    cols={{ base: 1, sm: 2, md: 4 }}
+    spacing="md"
+  >
+    <TextInput
+      label="Search"
+      placeholder="Search item..."
+      leftSection={<IconSearch size={16} />}
+      size="md"
+      styles={{
+        input: { borderWidth: 2 },
+        label: { fontWeight: 600 },
+      }}
+      value={search}
+      onChange={(e) => setSearch(e.currentTarget.value)}
     />
-  ) : (
-    <DesktopInventoryTable
-      items={items}
-      borrowingId={borrowingId}
-      onBorrow={handleBorrow}
+
+    <Select
+      label="Category"
+      placeholder="All"
+      data={categories}
+      size="md"
+      styles={{
+        input: { borderWidth: 2 },
+        label: { fontWeight: 600 },
+      }}
+      value={categoryFilter}
+      onChange={setCategoryFilter}
+      clearable
     />
+
+    <Select
+      label="Status"
+      placeholder="All"
+      data={statuses}
+      size="md"
+      styles={{
+        input: { borderWidth: 2 },
+        label: { fontWeight: 600 },
+      }}
+      value={statusFilter}
+      onChange={setStatusFilter}
+      clearable
+    />
+
+    <Stack gap={4} justify="flex-end">
+      <Text size="md" fw={600}>
+        Stock
+      </Text>
+
+      <Group align="center">
+        <Switch
+          size="md"
+          checked={lowStockOnly}
+          onChange={(e) => setLowStockOnly(e.currentTarget.checked)}
+        />
+        <Text size="sm" fw={500}>
+          Low stock only
+        </Text>
+      </Group>
+    </Stack>
+  </SimpleGrid>
+</Paper>
+
+      {/* ===== TABLE / CARDS ===== */}
+      {filteredItems.length === 0 ? (
+        <Center py="lg">
+          <Text c="dimmed">No matching results</Text>
+        </Center>
+      ) : isMobile ? (
+        <MobileInventoryCards
+          items={filteredItems}
+          borrowingId={borrowingId}
+          onBorrow={handleBorrow}
+        />
+      ) : (
+        <DesktopInventoryTable
+          items={filteredItems}
+          borrowingId={borrowingId}
+          onBorrow={handleBorrow}
+        />
+      )}
+    </Stack>
   );
 }
