@@ -1,16 +1,18 @@
-// Import styles of packages that you've installed.
-// All packages except `@mantine/hooks` require styles imports
+// Import styles
 import "@mantine/core/styles.css";
+import "@mantine/notifications/styles.css";
+
 import { AppShellLayout } from "@/components/layout/AppShellLayout";
 import {
   ColorSchemeScript,
   MantineProvider,
   mantineHtmlProps,
 } from "@mantine/core";
+import { Notifications } from "@mantine/notifications";
 
 export const metadata = {
-  title: "My Mantine app",
-  description: "I have followed setup instructions carefully",
+  title: "Inventory360",
+  description: "Inventory Management System",
 };
 
 export default function RootLayout({
@@ -23,8 +25,9 @@ export default function RootLayout({
       <head>
         <ColorSchemeScript />
       </head>
-      <body style={{ backgroundColor: '#f3f4f6' }}>
-        <MantineProvider>
+      <body>
+        <MantineProvider defaultColorScheme="dark">
+          <Notifications position="top-right" />
           <AppShellLayout>{children}</AppShellLayout>
         </MantineProvider>
       </body>
