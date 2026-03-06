@@ -9,9 +9,10 @@ datasource db {
 }
 
 enum Role {
-  ADMIN
-  CORE
-  MEMBER
+  MASTER_ADMIN
+  BOARD
+  SENIOR_CORE
+  JUNIOR_CORE
 }
 
 enum ItemStatus {
@@ -33,7 +34,8 @@ model Member {
   name          String
   email         String   @unique
   password_hash String
-  role          Role     @default(MEMBER)
+  role          Role     @default(JUNIOR_CORE)
+  mustChangePwd Boolean  @default(true)
   created_at    DateTime @default(now())
   updated_at    DateTime @updatedAt
 
@@ -69,4 +71,7 @@ model Loan {
 
   item   Item   @relation(fields: [item_id], references: [id])
   member Member @relation(fields: [member_id], references: [id])
+
+  @@index([item_id])
+  @@index([member_id])
 }

@@ -35,9 +35,6 @@ importers:
       pg:
         specifier: ^8.18.0
         version: 8.18.0
-      prisma:
-        specifier: ^6.19.2
-        version: 6.19.2(typescript@5.9.3)
       react:
         specifier: 19.2.3
         version: 19.2.3
@@ -75,6 +72,9 @@ importers:
       postcss-simple-vars:
         specifier: ^7.0.1
         version: 7.0.1(postcss@8.5.6)
+      prisma:
+        specifier: ^6.19.2
+        version: 6.19.2(typescript@5.9.3)
       tailwindcss:
         specifier: ^4
         version: 4.2.1
