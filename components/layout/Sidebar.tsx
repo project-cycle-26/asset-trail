@@ -2,14 +2,14 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Stack, Text, Group, ThemeIcon, Box } from "@mantine/core";
-import { IconPackage, IconLayoutDashboard, IconBox, IconClipboardList } from "@tabler/icons-react";
+import { Stack, Text, Group, Box } from "@mantine/core";
+import {IconLayoutDashboard, IconBox, IconClipboardList } from "@tabler/icons-react";
 
 export function Sidebar() {
   const pathname = usePathname();
 
   const navItems = [
-    { label: "Dashboard", href: "/", icon: IconLayoutDashboard },
+    { label: "Dashboard", href: "/dashboard", icon: IconLayoutDashboard },
     { label: "Inventory", href: "/inventory", icon: IconBox },
     { label: "Loans", href: "/loans", icon: IconClipboardList },
   ];
