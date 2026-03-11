@@ -26,6 +26,7 @@ declare module "next-auth/jwt" {
     mustChangePwd?: boolean;
   }
 }
+
 export const authOptions: NextAuthOptions = {
   providers: [
     CredentialsProvider({
@@ -91,8 +92,13 @@ export const authOptions: NextAuthOptions = {
     },
   },
 
+  pages: {
+    signIn: "/login",
+  },
+
   secret: process.env.NEXTAUTH_SECRET,
 };
+
 const handler = NextAuth(authOptions);
 
 export { handler as GET, handler as POST };
