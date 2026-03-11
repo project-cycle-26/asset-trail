@@ -2,9 +2,19 @@ export const runtime = "nodejs";
 
 import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
+import { requireAuth } from "@/lib/auth";
 
 export async function GET(req: Request) {
   try {
+    const auth = await requireAuth();
+
+    if ("error" in auth) {
+      return NextResponse.json(
+        { error: auth.error },
+        { status: auth.status }
+      );
+    }
+
     const { searchParams } = new URL(req.url);
     const memberIdParam = searchParams.get("member_id");
 
@@ -27,8 +37,10 @@ export async function GET(req: Request) {
     });
 
     return NextResponse.json(loans);
+
   } catch (error) {
     console.error("Error fetching loans:", error);
+
     return NextResponse.json(
       { error: "Failed to fetch loans" },
       { status: 500 },
@@ -38,6 +50,15 @@ export async function GET(req: Request) {
 
 export async function POST(req: Request) {
   try {
+    const auth = await requireAuth();
+
+    if ("error" in auth) {
+      return NextResponse.json(
+        { error: auth.error },
+        { status: auth.status }
+      );
+    }
+
     const body = await req.json();
     const { item_id, member_id, due_date, purpose } = body;
 
@@ -47,6 +68,7 @@ export async function POST(req: Request) {
         { status: 400 },
       );
     }
+
     if (new Date(due_date) <= new Date()) {
       return NextResponse.json(
         { error: "due_date must be in the future" },
@@ -109,8 +131,10 @@ export async function POST(req: Request) {
     });
 
     return NextResponse.json(loan, { status: 201 });
+
   } catch (error) {
     console.error("Error creating loan:", error);
+
     return NextResponse.json(
       { error: "Failed to create loan" },
       { status: 500 },
