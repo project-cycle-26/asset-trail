@@ -2,9 +2,20 @@ export const runtime = "nodejs";
 
 import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
+import { requireRole, requireAuth } from "@/lib/auth";
 
 export async function GET() {
   try {
+    // Require user to be logged in
+    const auth = await requireAuth();
+
+    if ("error" in auth) {
+      return NextResponse.json(
+        { error: auth.error },
+        { status: auth.status }
+      );
+    }
+
     const items = await prisma.item.findMany({
       select: {
         id: true,
@@ -19,14 +30,28 @@ export async function GET() {
     });
 
     return NextResponse.json(items);
+
   } catch (error) {
     console.error("Error fetching items:", error);
-    return NextResponse.json({ error: "Failed to fetch items" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Failed to fetch items" },
+      { status: 500 }
+    );
   }
 }
 
 export async function POST(req: Request) {
   try {
+    // RBAC check
+    const auth = await requireRole(["MASTER_ADMIN", "BOARD"]);
+
+    if ("error" in auth) {
+      return NextResponse.json(
+        { error: auth.error },
+        { status: auth.status }
+      );
+    }
+
     const body = await req.json();
     const { name, category, quantity_total, location } = body;
 
@@ -67,8 +92,12 @@ export async function POST(req: Request) {
     });
 
     return NextResponse.json(item, { status: 201 });
+
   } catch (error) {
     console.error("Error creating item:", error);
-    return NextResponse.json({ error: "Failed to create item" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Failed to create item" },
+      { status: 500 }
+    );
   }
 }

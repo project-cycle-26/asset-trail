@@ -5,22 +5,31 @@ export async function requireAuth() {
   const session = await getServerSession(authOptions);
 
   if (!session) {
-    throw new Error("Unauthorized");
+    return {
+      error: "Unauthorized",
+      status: 401,
+    };
   }
 
-  return session;
+  return { session };
 }
 
 export async function requireRole(roles: string[]) {
   const session = await getServerSession(authOptions);
 
   if (!session) {
-    throw new Error("Unauthorized");
+    return {
+      error: "Unauthorized",
+      status: 401,
+    };
   }
 
   if (!roles.includes(session.user.role as string)) {
-    throw new Error("Forbidden");
+    return {
+      error: "Forbidden",
+      status: 403,
+    };
   }
 
-  return session;
+  return { session };
 }

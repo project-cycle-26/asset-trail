@@ -2,12 +2,17 @@ export const runtime = "nodejs";
 
 import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
-
+import { requireRole, requireAuth } from "@/lib/auth";
 export async function GET(
   req: Request,
-  context: { params: Promise<{ id: string }> }
+  context: { params: Promise<{ id: string }> },
 ) {
   try {
+    const auth = await requireAuth();
+
+    if ("error" in auth) {
+      return Response.json({ error: auth.error }, { status: auth.status });
+    }
     const { id } = await context.params;
     const itemId = Number(id);
 
@@ -37,16 +42,25 @@ export async function GET(
     console.error("Error fetching item:", error);
     return NextResponse.json(
       { error: "Failed to fetch item" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
 
 export async function PATCH(
   req: Request,
-  context: { params: Promise<{ id: string }> }
+  context: { params: Promise<{ id: string }> },
 ) {
   try {
+    const auth = await requireRole(["MASTER_ADMIN", "BOARD"]);
+
+    if ("error" in auth) {
+      return NextResponse.json(
+        { error: auth.error },
+        { status: auth.status }
+      );
+    }
+
     const { id } = await context.params;
     const itemId = Number(id);
 
@@ -59,9 +73,7 @@ export async function PATCH(
 
     const existingItem = await prisma.item.findUnique({
       where: { id: itemId },
-      select: {
-        quantity_available: true,
-      },
+      select: { quantity_available: true },
     });
 
     if (!existingItem) {
@@ -84,7 +96,9 @@ export async function PATCH(
       data: {
         ...(name && { name }),
         ...(category && { category }),
-        ...(quantity_total !== undefined && { quantity_total: Number(quantity_total) }),
+        ...(quantity_total !== undefined && {
+          quantity_total: Number(quantity_total),
+        }),
         ...(location && { location }),
         ...(status && { status }),
       },
@@ -111,9 +125,18 @@ export async function PATCH(
 
 export async function DELETE(
   req: Request,
-  context: { params: Promise<{ id: string }> }
+  context: { params: Promise<{ id: string }> },
 ) {
   try {
+    const auth = await requireRole(["MASTER_ADMIN", "BOARD"]);
+
+    if ("error" in auth) {
+      return NextResponse.json(
+        { error: auth.error },
+        { status: auth.status }
+      );
+    }
+
     const { id } = await context.params;
     const itemId = Number(id);
 
