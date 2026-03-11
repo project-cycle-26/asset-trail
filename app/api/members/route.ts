@@ -53,7 +53,7 @@ export async function POST(req: Request) {
         email,
         password_hash: hashedPassword,
         role: role ?? "JUNIOR_CORE", // default role
-        mustChangePwd: false,
+        mustChangePwd: true, // force password change on first login
       },
       select: {
         id: true,
