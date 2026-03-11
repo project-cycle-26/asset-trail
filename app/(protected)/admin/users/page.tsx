@@ -1,8 +1,14 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Title, Paper } from "@mantine/core";
+import { Paper, Button } from "@mantine/core";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
+import { PageHeader } from "@/components/layout/PageHeader";
+import { IconPlus } from "@tabler/icons-react";
 import { DesktopUsersTable } from "@/components/users/DesktopUsersTable";
+import { useDisclosure } from "@mantine/hooks";
+import { AddMemberModal } from "@/components/users/AddMemberModal";
 
 type Member = {
   id: number;
@@ -12,16 +18,28 @@ type Member = {
 };
 
 export default function UsersPage() {
-  const [members, setMembers] = useState<Member[]>([]);
+  const { data: session, status } = useSession();
+  const router = useRouter();
 
-  // Fetch members
+  const [members, setMembers] = useState<Member[]>([]);
+  const [opened, { open, close }] = useDisclosure(false);
+
+  const userRole = session?.user?.role;
+
+  useEffect(() => {
+    if (status === "loading") return;
+
+    if (userRole !== "MASTER_ADMIN") {
+      router.replace("/dashboard");
+    }
+  }, [userRole, status, router]);
+
   async function fetchMembers() {
     const res = await fetch("/api/members");
     const data = await res.json();
     setMembers(data);
   }
 
-  // Change role
   async function handleRoleChange(id: number, role: string) {
     await fetch(`/api/members/${id}`, {
       method: "PATCH",
@@ -32,7 +50,6 @@ export default function UsersPage() {
     fetchMembers();
   }
 
-  // Delete user
   async function handleDelete(id: number) {
     await fetch(`/api/members/${id}`, {
       method: "DELETE",
@@ -48,10 +65,16 @@ export default function UsersPage() {
   }, []);
 
   return (
-    <div style={{ width: "100%" }}>
-      <Title order={2} mb="lg">
-        Members
-      </Title>
+    <>
+      <PageHeader
+        title="Members"
+        subtitle="Manage system users and permissions"
+        rightSection={
+          <Button leftSection={<IconPlus size={16} />} onClick={open}>
+            Add Member
+          </Button>
+        }
+      />
 
       <Paper withBorder radius="md" p="md">
         <DesktopUsersTable
@@ -60,6 +83,12 @@ export default function UsersPage() {
           onDelete={handleDelete}
         />
       </Paper>
-    </div>
+
+      <AddMemberModal
+        opened={opened}
+        onClose={close}
+        onSuccess={fetchMembers}
+      />
+    </>
   );
 }
