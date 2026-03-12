@@ -32,18 +32,20 @@ export type Item = {
   status: string;
 };
 
-export function InventoryTable() {
+type Props = {
+  refreshKey: number;
+};
+
+export function InventoryTable({ refreshKey }: Props) {
   const [items, setItems] = useState<Item[]>([]);
   const [loading, setLoading] = useState(true);
   const [borrowingId, setBorrowingId] = useState<number | null>(null);
 
-  // FILTER STATES
   const [search, setSearch] = useState("");
   const [categoryFilter, setCategoryFilter] = useState<string | null>(null);
   const [statusFilter, setStatusFilter] = useState<string | null>(null);
   const [lowStockOnly, setLowStockOnly] = useState(false);
 
-  // PAGINATION
   const [page, setPage] = useState(1);
   const ITEMS_PER_PAGE = 8;
 
@@ -51,8 +53,11 @@ export function InventoryTable() {
 
   async function fetchItems() {
     try {
+      setLoading(true);
+
       const res = await fetch("/api/items");
       const data = await res.json();
+
       setItems(data);
     } catch {
       notifications.show({
@@ -67,7 +72,7 @@ export function InventoryTable() {
 
   useEffect(() => {
     fetchItems();
-  }, []);
+  }, [refreshKey]);
 
   async function handleBorrow(itemId: number) {
     setBorrowingId(itemId);
@@ -103,7 +108,6 @@ export function InventoryTable() {
     }
   }
 
-  // 🔥 UPDATED 20% LOW STOCK LOGIC
   const filteredItems = useMemo(() => {
     return items.filter((item) => {
       const matchesSearch = item.name
@@ -247,7 +251,6 @@ export function InventoryTable() {
         />
       )}
 
-      {/* PAGINATION CONTROLS */}
       {totalPages > 1 && (
         <>
           <Divider />
