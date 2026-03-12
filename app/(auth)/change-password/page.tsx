@@ -73,12 +73,25 @@ export default function ChangePasswordPage() {
           }}
         >
           <Stack gap="lg">
-
             {/* Logo */}
             <Stack align="center" gap={8}>
-              <Avatar size={60} radius="xl" color="dark">
-                A
-              </Avatar>
+              <Box
+                style={{
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
+              >
+                <img
+                  src="/logo.png"
+                  alt="AssetTrail Logo"
+                  style={{
+                    width: 140,
+                    height: "auto",
+                    objectFit: "contain",
+                  }}
+                />
+              </Box>
 
               <Title order={2}>Change Password</Title>
 
@@ -92,7 +105,6 @@ export default function ChangePasswordPage() {
             {/* Form */}
             <form onSubmit={handleSubmit}>
               <Stack gap="md">
-
                 <PasswordInput
                   label="New Password"
                   placeholder="Enter new password"
@@ -132,10 +144,8 @@ export default function ChangePasswordPage() {
                 >
                   Update Password
                 </Button>
-
               </Stack>
             </form>
-
           </Stack>
         </Card>
       </Container>

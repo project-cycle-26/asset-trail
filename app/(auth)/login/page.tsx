@@ -70,15 +70,14 @@ export default function LoginPage() {
     <Box
       style={{
         minHeight: "100vh",
-        background:
-          "linear-gradient(135deg, #f3f5ed 0%, #e9ece3 100%)",
+        background: "linear-gradient(135deg, #f3f5ed 0%, #e9ece3 100%)",
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
         padding: "20px",
       }}
     >
-      <Container size={420} w="100%">
+      <Container size={460} w="100%">
         <Card
           shadow="xl"
           padding="40px"
@@ -90,22 +89,31 @@ export default function LoginPage() {
           }}
         >
           <Stack gap="lg">
-
             {/* Logo */}
             <Stack align="center" gap={8}>
-              <Avatar
-                size={60}
-                radius="xl"
-                color="dark"
+              <Box
+                style={{
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
               >
-                A
-              </Avatar>
+                <img
+                  src="/logo.png"
+                  alt="AssetTrail Logo"
+                  style={{
+                    width: 140,
+                    height: "auto",
+                    objectFit: "contain",
+                  }}
+                />
+              </Box>
 
-              <Title order={2} fw={600}>
-                AssetTrail
+              <Title order={1} fw={700}>
+                Asset Trail
               </Title>
 
-              <Text size="sm" c="dimmed">
+              <Text size="md" c="dimmed">
                 Asset Management System
               </Text>
             </Stack>
@@ -115,7 +123,6 @@ export default function LoginPage() {
             {/* Login Form */}
             <form onSubmit={handleLogin}>
               <Stack gap="md">
-
                 <TextInput
                   label="Email"
                   placeholder="you@example.com"
@@ -145,19 +152,18 @@ export default function LoginPage() {
                 <Button
                   type="submit"
                   fullWidth
-                  size="md"
+                  size="lg"
                   loading={loading}
                   radius="md"
                   style={{
                     backgroundColor: "#181818",
-                    height: "44px",
+                    height: "48px",
                   }}
                 >
                   Login
                 </Button>
               </Stack>
             </form>
-
           </Stack>
         </Card>
       </Container>
