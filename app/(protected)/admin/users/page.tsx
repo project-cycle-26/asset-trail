@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Paper, Button } from "@mantine/core";
+import { Button } from "@mantine/core";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { PageHeader } from "@/components/layout/PageHeader";
@@ -98,8 +98,6 @@ export default function UsersPage() {
           </Button>
         }
       />
-
-      <Paper withBorder radius="md" p="md">
         <UsersTable
           members={members}
           onRoleChange={handleRoleChange}
@@ -107,7 +105,6 @@ export default function UsersPage() {
           onResetPassword={handleResetPassword}
           currentUserId={currentUserId}
         />
-      </Paper>
 
       <AddMemberModal
         opened={opened}

@@ -3,7 +3,6 @@
 import { AppShell, Burger, Group, ThemeIcon, Text } from "@mantine/core";
 import { useDisclosure, useMediaQuery } from "@mantine/hooks";
 import { Sidebar } from "./Sidebar";
-import { Shell } from "./Shell";
 import { IconPackage } from "@tabler/icons-react";
 
 export function AppShellLayout({ children }: { children: React.ReactNode }) {
@@ -74,7 +73,7 @@ export function AppShellLayout({ children }: { children: React.ReactNode }) {
 
       {/* Main Content */}
       <AppShell.Main>
-        <Shell>{children}</Shell>
+        {children}
       </AppShell.Main>
     </AppShell>
   );

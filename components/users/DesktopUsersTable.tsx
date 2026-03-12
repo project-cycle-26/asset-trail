@@ -9,12 +9,13 @@ import {
   Stack,
   Group,
 } from "@mantine/core";
-
 import {
-  IconDotsVertical,
-  IconTrash,
-  IconKey,
+  IconHash,
+  IconUser,
+  IconShield,
+  IconSettings,
 } from "@tabler/icons-react";
+import { IconDotsVertical, IconTrash, IconKey } from "@tabler/icons-react";
 
 import { modals } from "@mantine/modals";
 
@@ -47,7 +48,6 @@ export function DesktopUsersTable({
   onResetPassword,
   currentUserId,
 }: Props) {
-
   function confirmDelete(id: number, name: string) {
     modals.openConfirmModal({
       title: "Delete User",
@@ -64,7 +64,6 @@ export function DesktopUsersTable({
   }
 
   async function confirmReset(id: number, name: string) {
-
     if (id === currentUserId) return;
 
     const pwd = await onResetPassword(id, name);
@@ -77,45 +76,61 @@ export function DesktopUsersTable({
         </Text>
       ),
     });
-
   }
 
   return (
-    <Table highlightOnHover verticalSpacing="lg">
-
+    <Table highlightOnHover verticalSpacing="lg" horizontalSpacing="md">
       <Table.Thead>
-        <Table.Tr>
-          <Table.Th>ID</Table.Th>
-          <Table.Th>User</Table.Th>
-          <Table.Th>Role</Table.Th>
-          <Table.Th>Actions</Table.Th>
+        <Table.Tr style={{ background: "white" }}>
+          <Table.Th>
+            <Group gap={8} align="center">
+              <IconHash size={18} />
+              <Text size="md" fw={700}>
+                ID
+              </Text>
+            </Group>
+          </Table.Th>
+
+          <Table.Th>
+            <Group gap={8} align="center">
+              <IconUser size={18} />
+              <Text size="md" fw={700}>
+                User
+              </Text>
+            </Group>
+          </Table.Th>
+
+          <Table.Th>
+            <Group gap={8} align="center">
+              <IconShield size={18} />
+              <Text size="md" fw={700}>
+                Role
+              </Text>
+            </Group>
+          </Table.Th>
+
+          <Table.Th>
+            <Group gap={8} align="center">
+              <IconSettings size={18} />
+              <Text size="md" fw={700}>
+                Actions
+              </Text>
+            </Group>
+          </Table.Th>
         </Table.Tr>
       </Table.Thead>
 
       <Table.Tbody>
-
         {members.map((member, index) => {
-
           const isCurrentUser = member.id === currentUserId;
           const isMasterAdmin = member.role === "MASTER_ADMIN";
 
           return (
-
-            <Table.Tr
-              key={member.id}
-              style={
-                isCurrentUser
-                  ? { background: "#f8f9fa" }
-                  : undefined
-              }
-            >
-
+            <Table.Tr key={member.id}>
               <Table.Td>{index + 1}</Table.Td>
 
               <Table.Td>
-
                 <Stack gap={0}>
-
                   <Group gap={6}>
                     <Text fw={600}>{member.name}</Text>
 
@@ -129,13 +144,10 @@ export function DesktopUsersTable({
                   <Text size="sm" c="dimmed">
                     {member.email}
                   </Text>
-
                 </Stack>
-
               </Table.Td>
 
               <Table.Td>
-
                 <Badge
                   variant="light"
                   fw={600}
@@ -143,21 +155,18 @@ export function DesktopUsersTable({
                     member.role === "MASTER_ADMIN"
                       ? "red"
                       : member.role === "BOARD"
-                      ? "blue"
-                      : member.role === "SENIOR_CORE"
-                      ? "yellow.7"
-                      : "gray"
+                        ? "blue"
+                        : member.role === "SENIOR_CORE"
+                          ? "yellow.7"
+                          : "gray"
                   }
                 >
                   {roleLabels[member.role]}
                 </Badge>
-
               </Table.Td>
 
               <Table.Td>
-
                 <Menu position="bottom-end">
-
                   <Menu.Target>
                     <ActionIcon variant="subtle">
                       <IconDotsVertical size={18} />
@@ -165,7 +174,6 @@ export function DesktopUsersTable({
                   </Menu.Target>
 
                   <Menu.Dropdown>
-
                     <Menu.Label>Change Role</Menu.Label>
 
                     <Menu.Item
@@ -216,27 +224,17 @@ export function DesktopUsersTable({
                       color="red"
                       disabled={isCurrentUser || isMasterAdmin}
                       leftSection={<IconTrash size={16} />}
-                      onClick={() =>
-                        confirmDelete(member.id, member.name)
-                      }
+                      onClick={() => confirmDelete(member.id, member.name)}
                     >
                       Delete User
                     </Menu.Item>
-
                   </Menu.Dropdown>
-
                 </Menu>
-
               </Table.Td>
-
             </Table.Tr>
-
           );
-
         })}
-
       </Table.Tbody>
-
     </Table>
   );
 }
