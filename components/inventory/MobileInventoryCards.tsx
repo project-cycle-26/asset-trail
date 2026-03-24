@@ -135,26 +135,28 @@ export function MobileInventoryCards({
                   Edit
                 </Button>
 
-                <Tooltip
-                  label={
-                    borrowed > 0
-                      ? "Item has active loans"
-                      : ""
-                  }
-                  disabled={borrowed === 0}
-                >
-                  <Button
-                    size="sm"
-                    fw={700}
-                    color="red"
-                    variant="light"
-                    leftSection={<IconTrash size={16} />}
-                    disabled={borrowed > 0}
-                    onClick={() => onDelete(item)}
+                <RoleGuard role={role} allow={["MASTER_ADMIN"]}>
+                  <Tooltip
+                    label={
+                      borrowed > 0
+                        ? "Item has active loans"
+                        : ""
+                    }
+                    disabled={borrowed === 0}
                   >
-                    Delete
-                  </Button>
-                </Tooltip>
+                    <Button
+                      size="sm"
+                      fw={700}
+                      color="red"
+                      variant="light"
+                      leftSection={<IconTrash size={16} />}
+                      disabled={borrowed > 0}
+                      onClick={() => onDelete(item)}
+                    >
+                      Delete
+                    </Button>
+                  </Tooltip>
+                </RoleGuard>
               </Group>
             </RoleGuard>
           </Card>
