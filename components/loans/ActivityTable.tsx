@@ -31,6 +31,7 @@ import {
   IconHash,
 } from "@tabler/icons-react";
 import { activityActionColor, SECONDARY_ACTION_COLOR } from "@/lib/ui";
+import { useDebouncedValue } from "@/lib/hooks";
 
 type ActivityLog = {
   id: number;
@@ -64,7 +65,10 @@ export function ActivityTable() {
 
   const isMobile = useMediaQuery("(max-width: 768px)");
 
-  async function fetchLogs(p = 1, s = search, a = actionFilter) {
+  // Debounce search to prevent API calls on every keystroke
+  const debouncedSearch = useDebouncedValue(search, 300);
+
+  async function fetchLogs(p = 1, s = debouncedSearch, a = actionFilter) {
     try {
       setLoading(true);
       const params = new URLSearchParams({ page: String(p), per_page: String(PER_PAGE) });
@@ -82,9 +86,9 @@ export function ActivityTable() {
   }
 
   useEffect(() => {
-    fetchLogs(page, search, actionFilter);
+    fetchLogs(page, debouncedSearch, actionFilter);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [page, search, actionFilter]);
+  }, [page, debouncedSearch, actionFilter]);
 
   const totalPages = Math.ceil(total / PER_PAGE);
   const startItem = total === 0 ? 0 : (page - 1) * PER_PAGE + 1;

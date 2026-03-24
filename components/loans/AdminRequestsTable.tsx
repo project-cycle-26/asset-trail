@@ -46,6 +46,7 @@ import {
   roleLabel,
   SECONDARY_ACTION_COLOR,
 } from "@/lib/ui";
+import { useDebouncedValue } from "@/lib/hooks";
 
 type LoanRequest = {
   id: number;
@@ -75,6 +76,9 @@ export function AdminRequestsTable() {
   const [rejectNote, setRejectNote] = useState("");
 
   const isMobile = useMediaQuery("(max-width: 768px)");
+
+  // Debounce search to prevent re-render on every keystroke
+  const debouncedSearch = useDebouncedValue(search, 300);
 
   async function fetchRequests() {
     try {
@@ -161,13 +165,13 @@ export function AdminRequestsTable() {
   const filtered = useMemo(() => {
     return requests.filter((r) => {
       const matchSearch =
-        r.item.name.toLowerCase().includes(search.toLowerCase()) ||
-        r.member.name.toLowerCase().includes(search.toLowerCase()) ||
-        r.member.email.toLowerCase().includes(search.toLowerCase());
+        r.item.name.toLowerCase().includes(debouncedSearch.toLowerCase()) ||
+        r.member.name.toLowerCase().includes(debouncedSearch.toLowerCase()) ||
+        r.member.email.toLowerCase().includes(debouncedSearch.toLowerCase());
       const matchRole = roleFilter ? r.member.role === roleFilter : true;
       return matchSearch && matchRole;
     });
-  }, [requests, search, roleFilter]);
+  }, [requests, debouncedSearch, roleFilter]);
 
   useEffect(() => { setPage(1); }, [search, roleFilter]);
 

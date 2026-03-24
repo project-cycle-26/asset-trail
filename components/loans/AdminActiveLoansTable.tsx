@@ -41,6 +41,7 @@ import {
   IconAlertTriangle,
 } from "@tabler/icons-react";
 import { SECONDARY_ACTION_COLOR, PRIMARY_CTA_COLOR } from "@/lib/ui";
+import { useDebouncedValue } from "@/lib/hooks";
 
 type ActiveLoan = {
   id: number;
@@ -75,6 +76,9 @@ export function AdminActiveLoansTable() {
   const [confirmCloseId, setConfirmCloseId] = useState<number | null>(null);
 
   const isMobile = useMediaQuery("(max-width: 768px)");
+
+  // Debounce search to prevent re-render on every keystroke
+  const debouncedSearch = useDebouncedValue(search, 300);
 
   async function fetchLoans() {
     try {
@@ -126,16 +130,16 @@ export function AdminActiveLoansTable() {
   const filtered = useMemo(() => {
     return loans.filter((l) => {
       const matchSearch =
-        l.item.name.toLowerCase().includes(search.toLowerCase()) ||
-        l.member.name.toLowerCase().includes(search.toLowerCase()) ||
-        l.member.email.toLowerCase().includes(search.toLowerCase());
+        l.item.name.toLowerCase().includes(debouncedSearch.toLowerCase()) ||
+        l.member.name.toLowerCase().includes(debouncedSearch.toLowerCase()) ||
+        l.member.email.toLowerCase().includes(debouncedSearch.toLowerCase());
       const matchOverdue = overdueOnly ? isOverdue(l.due_date) : true;
       const matchApprover = approverFilter
         ? l.approved_by === Number(approverFilter)
         : true;
       return matchSearch && matchOverdue && matchApprover;
     });
-  }, [loans, search, overdueOnly, approverFilter]);
+  }, [loans, debouncedSearch, overdueOnly, approverFilter]);
 
   useEffect(() => { setPage(1); }, [search, overdueOnly, approverFilter]);
 

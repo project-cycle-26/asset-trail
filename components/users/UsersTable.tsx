@@ -20,6 +20,7 @@ import { IconSearch, IconRefresh } from "@tabler/icons-react";
 import { DesktopUsersTable } from "./DesktopUsersTable";
 import { MobileUsersCards } from "./MobileUserCards";
 import { SECONDARY_ACTION_COLOR } from "@/lib/ui";
+import { useDebouncedValue } from "@/lib/hooks";
 
 export type Member = {
   id: number;
@@ -51,17 +52,20 @@ export function UsersTable({
 
   const isMobile = useMediaQuery("(max-width: 768px)");
 
+  // Debounce search to prevent re-render on every keystroke
+  const debouncedSearch = useDebouncedValue(search, 300);
+
   const filteredMembers = useMemo(() => {
     return members.filter((m) => {
       const searchMatch =
-        m.name.toLowerCase().includes(search.toLowerCase()) ||
-        m.email.toLowerCase().includes(search.toLowerCase());
+        m.name.toLowerCase().includes(debouncedSearch.toLowerCase()) ||
+        m.email.toLowerCase().includes(debouncedSearch.toLowerCase());
 
       const roleMatch = roleFilter ? m.role === roleFilter : true;
 
       return searchMatch && roleMatch;
     });
-  }, [members, search, roleFilter]);
+  }, [members, debouncedSearch, roleFilter]);
 
   const paginatedMembers = useMemo(() => {
     const start = (page - 1) * ITEMS_PER_PAGE;

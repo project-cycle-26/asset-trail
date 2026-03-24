@@ -14,11 +14,11 @@ export const ROLE_LABELS: AnyRecord = {
 };
 
 // Keep role colors consistent across every page.
-// Minimized palette: brand/steel/yellow/red.
+// Palette: purple/cyan/yellow/red for maximum visibility.
 export const ROLE_COLORS: AnyRecord = {
   MASTER_ADMIN: "red",
-  BOARD: "brand",
-  SENIOR_CORE: "steel",
+  BOARD: "grape",
+  SENIOR_CORE: "cyan",
   JUNIOR_CORE: "yellow",
 };
 
