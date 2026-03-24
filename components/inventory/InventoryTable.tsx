@@ -24,6 +24,7 @@ import { MobileInventoryCards } from "./MobileInventoryCards";
 import { RequestLoanModal } from "@/components/loans/RequestLoanModal";
 import { ITEM_STATUS_LABELS, itemStatusLabel } from "@/lib/status";
 import { SECONDARY_ACTION_COLOR } from "@/lib/ui";
+import { useDebouncedValue } from "@/lib/hooks";
 
 export type Item = {
   id: number
@@ -58,6 +59,9 @@ export function InventoryTable({ refreshKey, onEdit, onDelete }: Props) {
 
   const isMobile = useMediaQuery("(max-width: 768px)");
 
+  // Debounce search to prevent API calls on every keystroke
+  const debouncedSearch = useDebouncedValue(search, 300);
+
   const fetchItems = useCallback(async () => {
     try {
       setLoading(true);
@@ -65,7 +69,7 @@ export function InventoryTable({ refreshKey, onEdit, onDelete }: Props) {
       const params = new URLSearchParams();
       params.set("page", String(page));
       params.set("limit", String(ITEMS_PER_PAGE));
-      if (search.trim()) params.set("search", search.trim());
+      if (debouncedSearch.trim()) params.set("search", debouncedSearch.trim());
       if (categoryFilter) params.set("category", categoryFilter);
       if (statusFilter) params.set("status", statusFilter);
 
@@ -86,11 +90,11 @@ export function InventoryTable({ refreshKey, onEdit, onDelete }: Props) {
     } finally {
       setLoading(false);
     }
-  }, [page, search, categoryFilter, statusFilter]);
+  }, [page, debouncedSearch, categoryFilter, statusFilter]);
 
   useEffect(() => {
     fetchItems();
-  }, [fetchItems, refreshKey, page, search, categoryFilter, statusFilter]);
+  }, [fetchItems, refreshKey, page, debouncedSearch, categoryFilter, statusFilter]);
 
   function handleBorrow(item: Item) {
     setBorrowModalItem(item);

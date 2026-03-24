@@ -17,6 +17,7 @@ import {
   Alert,
   Button,
   Loader,
+  ScrollArea,
 } from "@mantine/core";
 import {
   IconBox,
@@ -330,50 +331,52 @@ function UserDashboardView({ data }: { data: UserDashboard }) {
           {myActiveLoans.length === 0 ? (
             <Text size="sm">No active loans</Text>
           ) : (
-            <Table highlightOnHover>
-              <Table.Thead>
-                <Table.Tr>
-                  <Table.Th>Item</Table.Th>
-                  <Table.Th>Approved</Table.Th>
-                  <Table.Th>Due Date</Table.Th>
-                  <Table.Th>Status</Table.Th>
-                </Table.Tr>
-              </Table.Thead>
-              <Table.Tbody>
-                {myActiveLoans.map((loan) => {
-                  const overdue = loan.due_date && new Date(loan.due_date) < new Date();
-                  return (
-                    <Table.Tr key={loan.id}>
-                      <Table.Td>
-                        <Stack gap={2}>
-                          <Text size="sm" fw={500}>{loan.item.name}</Text>
-                          <Badge size="xs" variant="light">{loan.item.category}</Badge>
-                        </Stack>
-                      </Table.Td>
-                      <Table.Td>
-                        <Text size="xs">
-                          {loan.approved_at ? new Date(loan.approved_at).toLocaleDateString() : "—"}
-                        </Text>
-                      </Table.Td>
-                      <Table.Td>
-                        {loan.due_date ? (
-                          <Text size="xs" c={overdue ? "red" : undefined} fw={overdue ? 700 : undefined}>
-                            {new Date(loan.due_date).toLocaleDateString()}
+            <ScrollArea>
+              <Table highlightOnHover>
+                <Table.Thead>
+                  <Table.Tr>
+                    <Table.Th>Item</Table.Th>
+                    <Table.Th>Approved</Table.Th>
+                    <Table.Th>Due Date</Table.Th>
+                    <Table.Th>Status</Table.Th>
+                  </Table.Tr>
+                </Table.Thead>
+                <Table.Tbody>
+                  {myActiveLoans.map((loan) => {
+                    const overdue = loan.due_date && new Date(loan.due_date) < new Date();
+                    return (
+                      <Table.Tr key={loan.id}>
+                        <Table.Td>
+                          <Stack gap={2}>
+                            <Text size="sm" fw={500}>{loan.item.name}</Text>
+                            <Badge size="xs" variant="light">{loan.item.category}</Badge>
+                          </Stack>
+                        </Table.Td>
+                        <Table.Td>
+                          <Text size="xs">
+                            {loan.approved_at ? new Date(loan.approved_at).toLocaleDateString() : "—"}
                           </Text>
-                        ) : (
-                          <Text size="xs">—</Text>
-                        )}
-                      </Table.Td>
-                      <Table.Td>
-                        <Badge size="xs" color={loanStatusColor(loan.status)} variant="light">
-                          {loanStatusLabel(loan.status)}
-                        </Badge>
-                      </Table.Td>
-                    </Table.Tr>
-                  );
-                })}
-              </Table.Tbody>
-            </Table>
+                        </Table.Td>
+                        <Table.Td>
+                          {loan.due_date ? (
+                            <Text size="xs" c={overdue ? "red" : undefined} fw={overdue ? 700 : undefined}>
+                              {new Date(loan.due_date).toLocaleDateString()}
+                            </Text>
+                          ) : (
+                            <Text size="xs">—</Text>
+                          )}
+                        </Table.Td>
+                        <Table.Td>
+                          <Badge size="xs" color={loanStatusColor(loan.status)} variant="light">
+                            {loanStatusLabel(loan.status)}
+                          </Badge>
+                        </Table.Td>
+                      </Table.Tr>
+                    );
+                  })}
+                </Table.Tbody>
+              </Table>
+            </ScrollArea>
           )}
           <Group justify="flex-end" mt="sm">
             <Button
@@ -402,35 +405,37 @@ function UserDashboardView({ data }: { data: UserDashboard }) {
           {myPendingRequests.length === 0 ? (
             <Text size="sm">No pending requests</Text>
           ) : (
-            <Table highlightOnHover>
-              <Table.Thead>
-                <Table.Tr>
-                  <Table.Th>Item</Table.Th>
-                  <Table.Th>Requested</Table.Th>
-                  <Table.Th>Status</Table.Th>
-                </Table.Tr>
-              </Table.Thead>
-              <Table.Tbody>
-                {myPendingRequests.map((loan) => (
-                  <Table.Tr key={loan.id}>
-                    <Table.Td>
-                      <Stack gap={2}>
-                        <Text size="sm" fw={500}>{loan.item.name}</Text>
-                        <Badge size="xs" variant="light">{loan.item.category}</Badge>
-                      </Stack>
-                    </Table.Td>
-                    <Table.Td>
-                      <Text size="xs">{new Date(loan.requested_at).toLocaleDateString()}</Text>
-                    </Table.Td>
-                    <Table.Td>
-                      <Badge size="xs" color={loanStatusColor(loan.status)} variant="light">
-                        {loanStatusLabel(loan.status)}
-                      </Badge>
-                    </Table.Td>
+            <ScrollArea>
+              <Table highlightOnHover>
+                <Table.Thead>
+                  <Table.Tr>
+                    <Table.Th>Item</Table.Th>
+                    <Table.Th>Requested</Table.Th>
+                    <Table.Th>Status</Table.Th>
                   </Table.Tr>
-                ))}
-              </Table.Tbody>
-            </Table>
+                </Table.Thead>
+                <Table.Tbody>
+                  {myPendingRequests.map((loan) => (
+                    <Table.Tr key={loan.id}>
+                      <Table.Td>
+                        <Stack gap={2}>
+                          <Text size="sm" fw={500}>{loan.item.name}</Text>
+                          <Badge size="xs" variant="light">{loan.item.category}</Badge>
+                        </Stack>
+                      </Table.Td>
+                      <Table.Td>
+                        <Text size="xs">{new Date(loan.requested_at).toLocaleDateString()}</Text>
+                      </Table.Td>
+                      <Table.Td>
+                        <Badge size="xs" color={loanStatusColor(loan.status)} variant="light">
+                          {loanStatusLabel(loan.status)}
+                        </Badge>
+                      </Table.Td>
+                    </Table.Tr>
+                  ))}
+                </Table.Tbody>
+              </Table>
+            </ScrollArea>
           )}
         </Paper>
       </SimpleGrid>
@@ -448,28 +453,30 @@ function UserDashboardView({ data }: { data: UserDashboard }) {
         {lowStockItems.length === 0 ? (
           <Text size="sm">No low stock items</Text>
         ) : (
-          <Table highlightOnHover>
-            <Table.Thead>
-              <Table.Tr>
-                <Table.Th>Item</Table.Th>
-                <Table.Th>Available</Table.Th>
-                <Table.Th>Location</Table.Th>
-              </Table.Tr>
-            </Table.Thead>
-            <Table.Tbody>
-              {lowStockItems.map((item) => (
-                <Table.Tr key={item.id}>
-                  <Table.Td><Text size="sm" fw={500}>{item.name}</Text></Table.Td>
-                  <Table.Td>
-                    <Text size="sm" c="red" fw={700}>
-                      {item.quantity_available} / {item.quantity_total}
-                    </Text>
-                  </Table.Td>
-                  <Table.Td><Text size="xs">{item.location}</Text></Table.Td>
+          <ScrollArea>
+            <Table highlightOnHover>
+              <Table.Thead>
+                <Table.Tr>
+                  <Table.Th>Item</Table.Th>
+                  <Table.Th>Available</Table.Th>
+                  <Table.Th>Location</Table.Th>
                 </Table.Tr>
-              ))}
-            </Table.Tbody>
-          </Table>
+              </Table.Thead>
+              <Table.Tbody>
+                {lowStockItems.map((item) => (
+                  <Table.Tr key={item.id}>
+                    <Table.Td><Text size="sm" fw={500}>{item.name}</Text></Table.Td>
+                    <Table.Td>
+                      <Text size="sm" c="red" fw={700}>
+                        {item.quantity_available} / {item.quantity_total}
+                      </Text>
+                    </Table.Td>
+                    <Table.Td><Text size="xs">{item.location}</Text></Table.Td>
+                  </Table.Tr>
+                ))}
+              </Table.Tbody>
+            </Table>
+          </ScrollArea>
         )}
       </Paper>
     </Stack>
@@ -496,8 +503,8 @@ export default function Dashboard() {
   return (
     <Stack gap="xl" p="md" className="dashboard-root">
       <Group>
-        <ThemeIcon color={isAdmin ? PRIMARY_CTA_COLOR : "green"} variant="light" size="lg" radius="md">
-          {isAdmin ? <IconUsers size={20} /> : <IconBolt size={20} />}
+        <ThemeIcon color={PRIMARY_CTA_COLOR} variant="light" size="lg" radius="md">
+          <IconUsers size={20} />
         </ThemeIcon>
         <div>
           <Title order={3}>Dashboard</Title>

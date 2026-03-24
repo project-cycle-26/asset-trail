@@ -37,6 +37,7 @@ import {
 } from "@tabler/icons-react";
 import { SECONDARY_ACTION_COLOR, REJECT_ACTION_COLOR } from "@/lib/ui";
 import { loanStatusColor, loanStatusLabel } from "@/lib/status";
+import { useDebouncedValue } from "@/lib/hooks";
 
 type LoanStatus = "REQUESTED" | "APPROVED" | "CLOSED" | "REJECTED" | "CANCELLED";
 
@@ -68,6 +69,9 @@ export function MyLoansTable() {
   const [cancelLoading, setCancelLoading] = useState(false);
 
   const isMobile = useMediaQuery("(max-width: 768px)");
+
+  // Debounce search to prevent re-render on every keystroke
+  const debouncedSearch = useDebouncedValue(search, 300);
 
   async function fetchLoans() {
     try {
@@ -107,12 +111,12 @@ export function MyLoansTable() {
   const filtered = useMemo(() => {
     return loans.filter((l) => {
       const matchSearch =
-        l.item.name.toLowerCase().includes(search.toLowerCase()) ||
-        l.item.category.toLowerCase().includes(search.toLowerCase());
+        l.item.name.toLowerCase().includes(debouncedSearch.toLowerCase()) ||
+        l.item.category.toLowerCase().includes(debouncedSearch.toLowerCase());
       const matchStatus = statusFilter ? l.status === statusFilter : true;
       return matchSearch && matchStatus;
     });
-  }, [loans, search, statusFilter]);
+  }, [loans, debouncedSearch, statusFilter]);
 
   useEffect(() => { setPage(1); }, [search, statusFilter]);
 
